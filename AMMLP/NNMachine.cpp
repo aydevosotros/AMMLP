@@ -569,6 +569,7 @@ void NNMachine::trainByGradient(int iter, double alpha) {
 		std::cout << "Para la iteración " << it << " el coste es: " << coste << std::endl;
 		// Recalculo theta para la siguiente iteracion
 		for(int l=0; l<L-1; l++){
+			/* Aquí me falta la "simultaneous update" */
 //			for(int i=0; i<s_l[l+1]; i++)
 //				for(int j=0; j<s_l[l]+1; j++)
 //					this->thetas[l](i,j)-=alpha*this->D[l](i,j);

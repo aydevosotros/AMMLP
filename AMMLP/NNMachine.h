@@ -7,12 +7,12 @@
 #include <vector>
 
 #include "armadillo"
+#include "Sample.h"
+#include "Utils.h"
 
 typedef arma::mat M2;
 
-
-
-class NNMachine: public IMachine {
+class NNMachine {
 public:
 	NNMachine();
 	virtual ~NNMachine();
@@ -79,7 +79,6 @@ private:
 
 	//AdvancedOptimization
 	void trainByOM();
-	void s1_grad(const real_1d_array &x, double &func, real_1d_array &grad, void *ptr);
 };
 
 #endif /* NNMACHINE_H_ */

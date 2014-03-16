@@ -5,8 +5,8 @@ LIB_DIR=lib/
 MAINFILE=main
 OBJFILE=lgm
 LIBS=-lboost_random -larmadillo -lCGAL
-SVMKernels= SVM/LinearKernel.cpp SVM/PolynomialKernel.cpp SVM/RBFKernel.cpp
-MORE_INCLUDES= LRMachine.cpp SVM/SVMachine.cpp NNMachine.cpp LinRMachine.cpp
+SVMKernels= 
+MORE_INCLUDES= NNMachine.cpp AMMLP.h
 
 all: $(MAINFILE) 
 
