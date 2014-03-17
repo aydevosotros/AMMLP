@@ -12,8 +12,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 #include "armadillo"
+#include "Utils.h"
 #include "Sample.h"
 
 class AMMLP {
@@ -21,7 +23,8 @@ public:
 	AMMLP();
 	virtual ~AMMLP();
 
-	void train(Sample input);
+	void loadTrainingSet(std::string FileName);
+	void train(int iteraciones, double alpha);
 	double predict(Sample input);
 
 private:
