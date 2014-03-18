@@ -76,9 +76,15 @@ void AMMLP::backPropagate() {
 		}
 		for(int l=L-1; l>0; l--){
 			if(l==L-1){
-				int r = (trainingSet[s].getResult()[0]==-1)?0:1;
+//				int r = (trainingSet[s].getResult()[0]==-1)?0:1;
 //				std::cout << "La activación para la última capa es: " << a[l] << "y el resultado es: " << this->trainingSet[s].getResult()[0] << std::endl;
-				lowerDelta[l](0) = a[l](0)-r; // esto es lo que tengo que generalizar para muchas salidas
+				/**
+				 * Incluyo la función subóptima f* en la última capa
+				 */
+				for(int i=0; i<s_l[l]; i++){ // Esto lo tengo que vectorizar
+					double y = -trainingSet[s].getResult()[i];
+					lowerDelta[l](i) = (a[l](i)-y)*y*(1-y)*this->subF(trainingSet[s]);
+				}
 			} else {
 				arma::Col<double> aux;
 				arma::mat gP = this->a[l]%(1-a[l]);
@@ -100,6 +106,19 @@ void AMMLP::backPropagate() {
 				this->upperDelta[l] += lowerDelta[l+1].rows(1,s_l[l+1])*this->a[l].t();
 //			std::cout << "El valor de upperDelta es: " << std::endl << upperDelta[l] << "para un theta: " << std::endl << thetas[l] << std::endl;
 		}
+		/**
+		 * Entiendo que ahora que tengo lowerdelta puedo actualizar los pesos
+		 * pero esto es el backprop, si actualizo los pesos por muestra... no se
+		 */
+		for(int l=0; l<L-1; l++){
+			arma::Col y;
+			if(l==0){
+				y = arma::Col(nFeatures);
+				for(int i=0; i<nFeatures; i++)
+					y(i)=trainingSet[s].input[i];
+			} else y=this->a[l];
+
+		}
 	}
 	// Regularizo y obtengo la D
 	for(int l=0; l<L-1; l++){
@@ -113,6 +132,7 @@ void AMMLP::backPropagate() {
 			}
 		}
 	}
+
 }
 
 void AMMLP::trainByGradient(int iter, double alpha) {
@@ -127,14 +147,19 @@ void AMMLP::trainByGradient(int iter, double alpha) {
 		double coste = cost();
 		std::cout << "Para la iteración " << it << " el coste es: " << coste << std::endl;
 		// Recalculo theta para la siguiente iteracion
-//		std::vector<arma::Mat<double> > temp;
-//		for(int l=0; l<L; l++)
-//			temp.push_back(this->thetas[l]); // Inicializo la copia
+		std::vector<arma::Mat<double> > temp;
+		for(int l=0; l<L; l++)
+			temp.push_back(this->thetas[l]); // Inicializo la copia
 		for(int l=0; l<L-1; l++){
-			/* Aquí me falta la "simultaneous update" */
-//			for(int i=0; i<s_l[l+1]; i++)
-//				for(int j=0; j<s_l[l]+1; j++)
-//					this->thetas[l](i,j)-=alpha*this->D[l](i,j);
+			arma::Col y;
+			if(l==0){ // La primera capa oculta
+				/**
+				 * Uso la entrada de la red neuronal como y[l-1]
+				 */
+				// La duda que tengo ahora es que los pesos se actualizan aquí y aquí no tengo una entrada concreta
+			}
+			// Delta me lo tengo que llevar como miembro
+			temp[l] = temp[l] + n*
 			this->thetas[l] = this->thetas[l] - (alpha*this->D[l]);
 		}
 		double vari = std::abs(pCoste-coste);
@@ -209,7 +234,6 @@ void AMMLP::initRandomThetas() {
 }
 
 double AMMLP::sigmoid(double z) {
-	double e = 2.71828182845904523536;
 	return 1/(1+pow(e,-z));
 }
 
@@ -271,7 +295,13 @@ double AMMLP::cost() {
 	return J+regularization;
 }
 
-double AMMLP::subF(arma::mat X) {
+double AMMLP::subF(Sample s) {
+	double sumX = 0.0;
+	for(int i=0; i<s.getResult().size(); i++)
+		sumX+=std::pow(s.getResult()[i],2);
+	sumX *= this->B/8;
+	double c = std::sqrt(std::pow(2*3.14,s.getResult().size()));
+	return A / (c * std::pow(e,sumX));
 }
 
 void AMMLP::pruebaXorBasica() {

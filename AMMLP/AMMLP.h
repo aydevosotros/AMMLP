@@ -33,6 +33,7 @@ private:
 	std::string thetasFileName;
 	Sample input;
 	double threshold;
+	double e = 2.71828182845904523536;
 
 	int L; //Número de capas
 	int nFeatures;
@@ -66,7 +67,7 @@ private:
 	double cost();
 
 	// Suboptimal functions implementation7
-	double subF(arma::mat X);
+	double subF(Sample s);
 
 	//Metodos de pruebas
 	void pruebaXorBasica();
