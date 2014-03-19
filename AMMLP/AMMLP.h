@@ -33,7 +33,7 @@ private:
 	std::string thetasFileName;
 	Sample input;
 	double threshold;
-	double e = 2.71828182845904523536;
+	double e;
 
 	int L; //Número de capas
 	int nFeatures;

@@ -9,7 +9,7 @@
 
 AMMLP::AMMLP() {
 	// TODO Auto-generated constructor stub
-
+	this->e = 2.71828182845904523536;
 }
 
 AMMLP::~AMMLP() {
@@ -111,13 +111,20 @@ void AMMLP::backPropagate() {
 		 * pero esto es el backprop, si actualizo los pesos por muestra... no se
 		 */
 		for(int l=0; l<L-1; l++){
-			arma::Col y;
+			arma::Col<double> y;
 			if(l==0){
-				y = arma::Col(nFeatures);
-				for(int i=0; i<nFeatures; i++)
-					y(i)=trainingSet[s].input[i];
+				y = arma::Col<double>(nFeatures+1);
+				for(int i=0; i<nFeatures+1; i++){
+					y(i)=(i==0)?1:trainingSet[s].getInput()[i-1];
+				}
 			} else y=this->a[l];
-
+			for(int i=0; i<s_l[l+1]; i++){
+				for(int j=0; j<s_l[l]+1; j++){
+//					std::cout << "LLego a la meta y estoy en la posición: " << l << "," << i << "," << j << std::endl;
+					this->thetas[l](i,j) = this->thetas[l](i,j)+this->alpha*(lowerDelta[l](i)*y(j));
+//					std::cout << "He modificado theta en: " << this->alpha*(lowerDelta[l](i)*y(j)) << std::endl;
+				}
+			}
 		}
 	}
 	// Regularizo y obtengo la D
@@ -136,6 +143,7 @@ void AMMLP::backPropagate() {
 }
 
 void AMMLP::trainByGradient(int iter, double alpha) {
+	this->alpha = alpha;
 	double pCoste = 0.0;
 	for(int it=0; it<iter; it++){
 		// Calculo el coste
@@ -147,28 +155,17 @@ void AMMLP::trainByGradient(int iter, double alpha) {
 		double coste = cost();
 		std::cout << "Para la iteración " << it << " el coste es: " << coste << std::endl;
 		// Recalculo theta para la siguiente iteracion
-		std::vector<arma::Mat<double> > temp;
-		for(int l=0; l<L; l++)
-			temp.push_back(this->thetas[l]); // Inicializo la copia
 		for(int l=0; l<L-1; l++){
-			arma::Col y;
-			if(l==0){ // La primera capa oculta
-				/**
-				 * Uso la entrada de la red neuronal como y[l-1]
-				 */
-				// La duda que tengo ahora es que los pesos se actualizan aquí y aquí no tengo una entrada concreta
-			}
 			// Delta me lo tengo que llevar como miembro
-			temp[l] = temp[l] + n*
 			this->thetas[l] = this->thetas[l] - (alpha*this->D[l]);
 		}
 		double vari = std::abs(pCoste-coste);
 		std::cout << "La variación en el coste para la iteración "<< it <<" es de: " << vari << std::endl;
 		if(it>0){
-			if(vari <= 0.0001){
-				std::cout << "Estoy suficientemente entrenado!!!!!!\n";
-				break;
-			}
+//			if(vari <= 0.0001){
+//				std::cout << "Estoy suficientemente entrenado!!!!!!\n";
+//				break;
+//			}
 //			if(std::isnan(coste))
 //				break;
 		}
@@ -280,7 +277,7 @@ void AMMLP::gradChecking() {
 double AMMLP::cost() {
 	double J = 0.0;
 	for(int i=0; i<this->trainingSet.size(); i++){
-		int r = (trainingSet[i].getResult()[0]==-1)?0:1;
+		int r = trainingSet[i].getResult()[0];
 		this->forwardPropagate(trainingSet[i]);
 		J += r*std::log(a[L-1](0)) + (1-r)*std::log(1-a[L-1](0));
 	}
@@ -330,8 +327,8 @@ void AMMLP::pruebaXorBasica() {
 void AMMLP::init() {
 	s_l.clear();
 	s_l.push_back(this->nFeatures);
-	s_l.push_back(this->nFeatures*2);
-	s_l.push_back(this->nFeatures);
+	s_l.push_back(3);
+//	s_l.push_back(this->nFeatures);
 	s_l.push_back(1);
 	L = s_l.size();
 
