@@ -28,9 +28,6 @@ public:
 	double predict(Sample input);
 
 private:
-	//Aguilañadidos
-	std::string inputFile;
-	std::string thetasFileName;
 	Sample input;
 	double threshold;
 	double e;
@@ -51,7 +48,6 @@ private:
 	// Metaplasticity parameters
 	double A;
 	double B;
-
 
 
 	void forwardPropagate(Sample s);
@@ -76,6 +72,8 @@ private:
 //	void readThetas(std::vector<std::string> lectura);
 //	void showThetas();
 	void init();
+
+	void loadTrainingSet(std::vector<Sample>);
 
 	//Para los tests
 	void fillTestingY();

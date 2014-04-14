@@ -4,7 +4,7 @@ INC_DIR=include/
 LIB_DIR=lib/ 
 MAINFILE=main
 OBJFILE=AMMLP
-LIBS=-lboost_random -larmadillo -lCGAL
+LIBS=-lboost_random -larmadillo
 MORE_INCLUDES= NNMachine.cpp AMMLP.cpp
 
 all: $(MAINFILE) 

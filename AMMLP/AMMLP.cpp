@@ -336,7 +336,6 @@ void AMMLP::init() {
 }
 
 void AMMLP::loadTrainingSet(std::string FileName) {
-	//	std::cout << "I'm loading training set with the LinRMachine from " << filename << std::endl;
 	std::string line;
 	std::ifstream trainingFile(FileName.c_str());
 
@@ -361,4 +360,7 @@ void AMMLP::loadTrainingSet(std::string FileName) {
 }
 
 void AMMLP::fillTestingY() {
+}
+
+void AMMLP::loadTrainingSet(std::vector<Sample> allocator) {
 }
